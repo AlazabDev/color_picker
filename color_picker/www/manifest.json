@@ -1,19 +1,107 @@
+
 {
-  "name": "منتقي الألوان المتقدم - Azab Tools",
-  "short_name": "منتقي الألوان",
-  "description": "أداة احترافية لاستخراج الألوان من الصور",
-  "start_url": "/color-picker",
-  "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
-  "icons": [
-    {
-      "src": "/assets/img/icon-192.png",
-      "sizes": "192x192", 
-      "type": "image/png"
+    "name": "منتقي الألوان المتقدم - Azab Tools",
+    "short_name": "منتقي الألوان",
+    "description": "أداة احترافية لاستخراج وتحليل الألوان من الصور مع ميزات متطورة",
+    "version": "1.0.0",
+    "start_url": "/color-picker",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay"],
+    "orientation": "any",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "lang": "ar",
+    "dir": "rtl",
+    "categories": ["productivity", "utilities", "design", "photo"],
+    "screenshots": [
+        {
+            "src": "/assets/color_picker/img/screenshot-desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "platform": "wide"
+        },
+        {
+            "src": "/assets/color_picker/img/screenshot-mobile.png", 
+            "sizes": "375x667",
+            "type": "image/png",
+            "platform": "narrow"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/assets/color_picker/img/icon-72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-96.png",
+            "sizes": "96x96", 
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/color_picker/img/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "منتقي الألوان",
+            "short_name": "منتقي",
+            "description": "فتح أداة منتقي الألوان مباشرة",
+            "url": "/color-picker",
+            "icons": [
+                {
+                    "src": "/assets/color_picker/img/icon-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "share_target": {
+        "action": "/color-picker",
+        "method": "GET",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url"
+        }
+    },
+    "prefer_related_applications": false,
+    "edge_side_panel": {
+        "preferred_width": 400
     }
-  ],
-  "categories": ["productivity", "utilities"],
-  "lang": "ar",
-  "dir": "rtl"
 }
