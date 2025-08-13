@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="أداة متقدمة لاستخراج الألوان من الصور مع دعم الكاميرا والمكبرة الشبكية">
+    <meta name="keywords" content="منتقي الألوان, استخراج الألوان, أداة تصميم, HEX, RGB, HSL">
+    <meta name="author" content="Azab Tools">
+    <title>منتقي الألوان المتقدم - Azab Tools</title>
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    
+    <!-- Optimized Critical CSS -->
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --success-light: #20c997;
+            --white: #ffffff;
+            --light-bg: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --shadow-hover: 0 6px 12px rgba(0,0,0,0.2);
+            --border-radius: 15px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 10px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: movePattern 20s linear infinite;
+        }
+
+        @keyframes movePattern {
+            0% { transform: translate(-50%, -50%); }
+            100% { transform: translate(-48%, -48%); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 2rem;
+            padding: 2rem;
+            align-items: start;
+        }
+
+        .image-section {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+            background: rgba(118, 75, 162, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--success-color);
+            background: rgba(40, 167, 69, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .upload-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .upload-btn:hover::before {
+            left: 100%;
+        }
+
+        .camera-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .gallery-btn {
+            background: linear-gradient(135deg, var(--success-color), var(--success-light));
+            color: var(--white);
+        }
+
+        .gallery-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .canvas-container {
+            position: relative;
+            display: none;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background: var(--white);
+        }
+
+        .canvas-container.show {
+            display: block;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #imageCanvas {
+            display: block;
+            max-width: 100%;
+            cursor: crosshair;
+            transition: var(--transition);
+        }
+
+        #imageCanvas:hover {
+            filter: brightness(1.05);
+        }
+
+        .magnifier {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border: 4px solid var(--white);
+            border-radius: 50%;
+            background: var(--white);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            pointer-events: none;
+            display: none;
+            z-index: 100;
+            transition: opacity 0.2s ease;
+        }
+
+        .magnifier canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .color-preview {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--white);
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 50;
+            transition: transform 0.2s ease;
+        }
+
+        .color-preview:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar {
+            background: var(--glass-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .eyedropper-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--success-color), var(--success-light));
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eyedropper-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .eyedropper-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .color-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .color-card.show {
+            display: block;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .color-display {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-display::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+            pointer-events: none;
+        }
+
+        .color-info {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .color-value {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .color-value:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(-3px);
+        }
+
+        .color-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 60px;
+            font-size: 0.9rem;
+        }
+
+        .color-code {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            background: var(--white);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            flex-grow: 1;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .color-code:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            min-width: 60px;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background: var(--success-color);
+            transform: scale(1.1);
+        }
+
+        .shades-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .shades-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .shades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 1rem;
+        }
+
+        .shade-item {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .shade-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .shade-item:hover::before {
+            opacity: 1;
+        }
+
+        .shade-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .shade-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #666;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--success-color);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .reset-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .reset-btn:hover {
+            background: var(--white);
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                padding: 1.5rem;
+            }
+            
+            .shades-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .upload-buttons {
+                flex-direction: column;
+            }
+            
+            .upload-btn {
+                width: 100%;
+            }
+            
+            .color-value {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            
+            .color-label {
+                min-width: auto;
+                text-align: center;
+            }
+            
+            .shades-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Performance optimizations */
+        .container {
+            contain: layout;
+        }
+
+        .canvas-container {
+            contain: layout;
+        }
+
+        .magnifier {
+            contain: strict;
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .color-value {
+                border: 2px solid;
+            }
+            
+            .shade-item {
+                border: 2px solid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 منتقي الألوان المتقدم</h1>
+            <p>أداة احترافية لاستخراج الألوان من الصور مع دعم الكاميرا والذكاء الاصطناعي</p>
+        </div>
+
+        <div class="content">
+            <div class="image-section">
+                <div class="upload-area" id="uploadArea" role="button" tabindex="0" 
+                     aria-label="منطقة رفع الصور - اسحب وأفلت أو انقر للاختيار">
+                    <div class="upload-icon" aria-hidden="true">📁</div>
+                    <h3>اسحب وأفلت صورة هنا</h3>
+                    <p>أو اختر من الخيارات التالية:</p>
+                    <div class="upload-buttons">
+                        <button class="upload-btn camera-btn" id="cameraBtn" 
+                                aria-label="التقط صورة من الكاميرا">
+                            📷 الكاميرا
+                        </button>
+                        <button class="upload-btn gallery-btn" id="galleryBtn" 
+                                aria-label="اختر صورة من المعرض">
+                            🖼️ المعرض
+                        </button>
+                    </div>
+                    <input type="file" id="fileInput" class="file-input" 
+                           accept="image/*" capture="environment" aria-label="اختيار صورة من الكاميرا">
+                    <input type="file" id="galleryInput" class="file-input" 
+                           accept="image/*" aria-label="اختيار صورة من المعرض">
+                </div>
+
+                <div class="canvas-container" id="canvasContainer">
+                    <button class="reset-btn" id="resetBtn" aria-label="إعادة تعيين وتحميل صورة جديدة">
+                        🔄 جديد
+                    </button>
+                    <canvas id="imageCanvas" role="img" aria-label="الصورة المحملة - حرك المؤشر لرؤية المكبرة وانقر لاختيار لون"></canvas>
+                    <div class="magnifier" id="magnifier" role="img" aria-label="مكبرة عرض تفاصيل المنطقة">
+                        <canvas id="magnifierCanvas" width="140" height="140"></canvas>
+                    </div>
+                    <div class="color-preview" id="colorPreview" role="img" aria-label="معاينة اللون المختار"></div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <button class="eyedropper-btn" id="eyedropperBtn" 
+                        aria-label="استخدم أداة انتقاء الألوان من الشاشة">
+                    🎯 التقط لون من الشاشة
+                </button>
+
+                <div class="color-card" id="colorCard" role="region" aria-label="معلومات اللون المختار">
+                    <div class="color-display" id="colorDisplay" role="img" aria-label="عرض اللون المختار"></div>
+                    
+                    <div class="color-info">
+                        <div class="color-value">
+                            <label class="color-label" for="hexValue">HEX</label>
+                            <input type="text" class="color-code" id="hexValue" readonly aria-label="قيمة اللون بصيغة HEX">
+                            <button class="copy-btn" onclick="copyToClipboard('hexValue')" aria-label="نسخ قيمة HEX">نسخ</button>
+                        </div>
+
+                        <div class="color-value">
+                            <label class="color-label" for="rgbValue">RGB</label>
+                            <input type="text" class="color-code" id="rgbValue" readonly aria-label="قيمة اللون بصيغة RGB">
+                            <button class="copy-btn" onclick="copyToClipboard('rgbValue')" aria-label="نسخ قيمة RGB">نسخ</button>
+                        </div>
+
+                        <div class="color-value">
+                            <label class="color-label" for="hslValue">HSL</label>
+                            <input type="text" class="color-code" id="hslValue" readonly aria-label="قيمة اللون بصيغة HSL">
+                            <button class="copy-btn" onclick="copyToClipboard('hslValue')" aria-label="نسخ قيمة HSL">نسخ</button>
+                        </div>
+
+                        <div class="color-value">
+                            <label class="color-label" for="cssValue">CSS Var</label>
+                            <input type="text" class="color-code" id="cssValue" readonly aria-label="متغير CSS للون">
+                            <button class="copy-btn" onclick="copyToClipboard('cssValue')" aria-label="نسخ متغير CSS">نسخ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shades-section" id="shadesSection" style="display: none;" 
+                     role="region" aria-label="درجات مختلفة من اللون المختار">
+                    <div class="shades-title">درجات اللون التلقائية</div>
+                    <div class="shades-grid" id="shadesGrid" role="group" aria-label="مجموعة درجات الألوان"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+    
+    <script>
+        // Enhanced Color Picker for Production
+        class AdvancedColorPicker {
+            constructor() {
+                this.canvas = null;
+                this.ctx = null;
+                this.magnifierCanvas = null;
+                this.magnifierCtx = null;
+                this.currentImage = null;
+                this.isLoading = false;
+                this.colorHistory = [];
+                this.maxHistorySize = 10;
+                
+                this.init();
+            }
+
+            init() {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.setupCanvas();
+                    this.setupEventListeners();
+                    this.checkEyeDropperSupport();
+                    this.setupKeyboardNavigation();
+                });
+            }
+
+            setupCanvas() {
+                this.canvas = document.getElementById('imageCanvas');
+                this.ctx = this.canvas.getContext('2d', { alpha: false });
+                this.magnifierCanvas = document.getElementById('magnifierCanvas');
+                this.magnifierCtx = this.magnifierCanvas.getContext('2d', { alpha: false });
+                
+                // Optimize canvas for performance
+                this.ctx.imageSmoothingEnabled = true;
+                this.ctx.imageSmoothingQuality = 'high';
+            }
+
+            setupEventListeners() {
+                const elements = {
+                    uploadArea: document.getElementById('uploadArea'),
+                    fileInput: document.getElementById('fileInput'),
+                    galleryInput: document.getElementById('galleryInput'),
+                    cameraBtn: document.getElementById('cameraBtn'),
+                    galleryBtn: document.getElementById('galleryBtn'),
+                    resetBtn: document.getElementById('resetBtn'),
+                    eyedropperBtn: document.getElementById('eyedropperBtn'),
+                    magnifier: document.getElementById('magnifier'),
+                    colorPreview: document.getElementById('colorPreview')
+                };
+
+                // File upload events
+                elements.cameraBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    elements.fileInput.click();
+                });
+                
+                elements.galleryBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    elements.galleryInput.click();
+                });
+
+                elements.resetBtn.addEventListener('click', () => this.resetApplication());
+
+                // Drag and drop with improved UX
+                elements.uploadArea.addEventListener('click', (e) => {
+                    if (e.target === elements.uploadArea) {
+                        elements.galleryInput.click();
+                    }
+                });
+
+                ['dragover', 'dragenter'].forEach(eventName => {
+                    elements.uploadArea.addEventListener(eventName, (e) => this.handleDragOver(e));
+                });
+
+                ['dragleave', 'dragend'].forEach(eventName => {
+                    elements.uploadArea.addEventListener(eventName, (e) => this.handleDragLeave(e));
+                });
+
+                elements.uploadArea.addEventListener('drop', (e) => this.handleDrop(e));
+                
+                elements.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+                elements.galleryInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                // Canvas events with throttling
+                this.canvas.addEventListener('mousemove', this.throttle((e) => this.handleMouseMove(e), 16));
+                this.canvas.addEventListener('mouseleave', () => this.hidePreviewElements());
+                this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+                this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+                this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+
+                // EyeDropper
+                elements.eyedropperBtn.addEventListener('click', () => this.useEyeDropper());
+            }
+
+            setupKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'Escape':
+                            this.hidePreviewElements();
+                            break;
+                        case 'r':
+                        case 'R':
+                            if (e.ctrlKey) {
+                                e.preventDefault();
+                                this.resetApplication();
+                            }
+                            break;
+                    }
+                });
+            }
+
+            throttle(func, delay) {
+                let timeoutId;
+                let lastExecTime = 0;
+                return function (...args) {
+                    const currentTime = Date.now();
+                    
+                    if (currentTime - lastExecTime > delay) {
+                        func.apply(this, args);
+                        lastExecTime = currentTime;
+                    } else {
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            func.apply(this, args);
+                            lastExecTime = Date.now();
+                        }, delay - (currentTime - lastExecTime));
+                    }
+                };
+            }
+
+            handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                e.currentTarget.classList.add('dragover');
+            }
+
+            handleDragLeave(e) {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    e.currentTarget.classList.remove('dragover');
+                }
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                const imageFile = files.find(file => file.type.startsWith('image/'));
+                
+                if (imageFile) {
+                    this.loadImage(imageFile);
+                } else {
+                    this.showToast('يرجى اختيار ملف صورة صالح', 'error');
+                }
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    this.loadImage(file);
+                } else if (file) {
+                    this.showToast('نوع الملف غير مدعوم. يرجى اختيار صورة', 'error');
+                }
+                // Reset file input
+                e.target.value = '';
+            }
+
+            async loadImage(file) {
+                if (this.isLoading) return;
+                
+                this.isLoading = true;
+                this.showLoadingState();
+
+                try {
+                    // Validate file size (max 10MB)
+                    if (file.size > 10 * 1024 * 1024) {
+                        throw new Error('حجم الصورة كبير جداً. يرجى اختيار صورة أصغر من 10 ميجابايت');
+                    }
+
+                    const imageDataUrl = await this.fileToDataUrl(file);
+                    const img = await this.createImageElement(imageDataUrl);
+                    
+                    this.currentImage = img;
+                    this.drawImageToCanvas(img);
+                    this.switchToCanvasView();
+                    
+                    this.showToast('تم تحميل الصورة بنجاح!', 'success');
+                } catch (error) {
+                    this.showToast(error.message || 'حدث خطأ أثناء تحميل الصورة', 'error');
+                    console.error('Image loading error:', error);
+                } finally {
+                    this.isLoading = false;
+                    this.hideLoadingState();
+                }
+            }
+
+            fileToDataUrl(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.onerror = () => reject(new Error('فشل في قراءة الملف'));
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            createImageElement(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = () => reject(new Error('فشل في تحميل الصورة'));
+                    img.src = src;
+                });
+            }
+
+            drawImageToCanvas(img) {
+                const maxWidth = 1200;
+                const maxHeight = 800;
+                let { width, height } = img;
+
+                // Calculate optimal dimensions
+                const aspectRatio = width / height;
+                if (width > maxWidth) {
+                    width = maxWidth;
+                    height = width / aspectRatio;
+                }
+                if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                }
+
+                // Set canvas dimensions
+                this.canvas.width = width;
+                this.canvas.height = height;
+                
+                // Clear and draw
+                this.ctx.clearRect(0, 0, width, height);
+                this.ctx.drawImage(img, 0, 0, width, height);
+            }
+
+            switchToCanvasView() {
+                document.getElementById('uploadArea').style.display = 'none';
+                const container = document.getElementById('canvasContainer');
+                container.style.display = 'block';
+                container.classList.add('show');
+            }
+
+            resetApplication() {
+                document.getElementById('canvasContainer').style.display = 'none';
+                document.getElementById('uploadArea').style.display = 'flex';
+                document.getElementById('colorCard').classList.remove('show');
+                document.getElementById('shadesSection').style.display = 'none';
+                this.hidePreviewElements();
+                this.currentImage = null;
+            }
+
+            handleMouseMove(e) {
+                if (!this.currentImage) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) * (this.canvas.width / rect.width));
+                const y = Math.floor((e.clientY - rect.top) * (this.canvas.height / rect.height));
+
+                if (this.isValidCoordinate(x, y)) {
+                    this.updateMagnifier(x, y, e.clientX, e.clientY);
+                    this.updateColorPreview(x, y);
+                }
+            }
+
+            handleTouchStart(e) {
+                e.preventDefault();
+                this.handleTouchEvent(e);
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                this.handleTouchEvent(e);
+            }
+
+            handleTouchEnd(e) {
+                e.preventDefault();
+                this.handleCanvasClick(e);
+            }
+
+            handleTouchEvent(e) {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const mockEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    this.handleMouseMove(mockEvent);
+                }
+            }
+
+            isValidCoordinate(x, y) {
+                return x >= 0 && x < this.canvas.width && y >= 0 && y < this.canvas.height;
+            }
+
+            updateMagnifier(canvasX, canvasY, mouseX, mouseY) {
+                const magnifier = document.getElementById('magnifier');
+                const size = 12;
+                const canvasSize = 140;
+
+                // Clear magnifier
+                this.magnifierCtx.clearRect(0, 0, canvasSize, canvasSize);
+                this.magnifierCtx.imageSmoothingEnabled = false;
+
+                // Calculate source area
+                const sourceX = Math.max(0, canvasX - size);
+                const sourceY = Math.max(0, canvasY - size);
+                const sourceWidth = Math.min(size * 2, this.canvas.width - sourceX);
+                const sourceHeight = Math.min(size * 2, this.canvas.height - sourceY);
+
+                // Draw magnified area
+                this.magnifierCtx.drawImage(
+                    this.canvas,
+                    sourceX, sourceY, sourceWidth, sourceHeight,
+                    0, 0, canvasSize, canvasSize
+                );
+
+                // Draw crosshair
+                this.drawCrosshair();
+
+                // Position magnifier
+                this.positionMagnifier(magnifier, mouseX, mouseY);
+            }
+
+            drawCrosshair() {
+                const center = 70;
+                const size = 15;
+                
+                this.magnifierCtx.strokeStyle = '#ff0000';
+                this.magnifierCtx.lineWidth = 2;
+                this.magnifierCtx.lineCap = 'round';
+                
+                this.magnifierCtx.beginPath();
+                this.magnifierCtx.moveTo(center, center - size);
+                this.magnifierCtx.lineTo(center, center + size);
+                this.magnifierCtx.moveTo(center - size, center);
+                this.magnifierCtx.lineTo(center + size, center);
+                this.magnifierCtx.stroke();
+            }
+
+            positionMagnifier(magnifier, mouseX, mouseY) {
+                const offset = 30;
+                const rect = document.querySelector('.container').getBoundingClientRect();
+                
+                let left = mouseX + offset;
+                let top = mouseY - 80;
+                
+                // Keep magnifier within viewport
+                if (left + 140 > window.innerWidth) {
+                    left = mouseX - 140 - offset;
+                }
+                if (top < 0) {
+                    top = mouseY + offset;
+                }
+                
+                magnifier.style.left = left + 'px';
+                magnifier.style.top = top + 'px';
+                magnifier.style.display = 'block';
+            }
+
+            updateColorPreview(x, y) {
+                try {
+                    const imageData = this.ctx.getImageData(x, y, 1, 1);
+                    const [r, g, b] = imageData.data;
+                    const color = `rgb(${r}, ${g}, ${b})`;
+                    
+                    const preview = document.getElementById('colorPreview');
+                    preview.style.backgroundColor = color;
+                    preview.style.display = 'block';
+                } catch (error) {
+                    console.error('Error updating color preview:', error);
+                }
+            }
+
+            hidePreviewElements() {
+                document.getElementById('magnifier').style.display = 'none';
+                document.getElementById('colorPreview').style.display = 'none';
+            }
+
+            handleCanvasClick(e) {
+                if (!this.currentImage) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                let x, y;
+                
+                if (e.touches) {
+                    const touch = e.touches[0] || e.changedTouches[0];
+                    x = Math.floor((touch.clientX - rect.left) * (this.canvas.width / rect.width));
+                    y = Math.floor((touch.clientY - rect.top) * (this.canvas.height / rect.height));
+                } else {
+                    x = Math.floor((e.clientX - rect.left) * (this.canvas.width / rect.width));
+                    y = Math.floor((e.clientY - rect.top) * (this.canvas.height / rect.height));
+                }
+
+                if (this.isValidCoordinate(x, y)) {
+                    try {
+                        const imageData = this.ctx.getImageData(x, y, 1, 1);
+                        const [r, g, b] = imageData.data;
+                        this.setSelectedColor(r, g, b);
+                    } catch (error) {
+                        console.error('Error selecting color:', error);
+                        this.showToast('حدث خطأ أثناء اختيار اللون', 'error');
+                    }
+                }
+            }
+
+            setSelectedColor(r, g, b) {
+                const colorData = {
+                    r, g, b,
+                    hex: this.rgbToHex(r, g, b),
+                    hsl: this.rgbToHsl(r, g, b),
+                    timestamp: Date.now()
+                };
+
+                // Add to history
+                this.addToHistory(colorData);
+
+                // Update UI
+                this.updateColorDisplay(colorData);
+                this.updateColorValues(colorData);
+                this.generateShades(colorData.hex);
+                
+                // Show sections
+                document.getElementById('colorCard').classList.add('show');
+                document.getElementById('shadesSection').style.display = 'block';
+                
+                this.showToast('تم اختيار اللون بنجاح!', 'success');
+            }
+
+            addToHistory(colorData) {
+                this.colorHistory.unshift(colorData);
+                if (this.colorHistory.length > this.maxHistorySize) {
+                    this.colorHistory = this.colorHistory.slice(0, this.maxHistorySize);
+                }
+            }
+
+            updateColorDisplay(colorData) {
+                const display = document.getElementById('colorDisplay');
+                display.style.backgroundColor = `rgb(${colorData.r}, ${colorData.g}, ${colorData.b})`;
+            }
+
+            updateColorValues(colorData) {
+                document.getElementById('hexValue').value = colorData.hex;
+                document.getElementById('rgbValue').value = `rgb(${colorData.r}, ${colorData.g}, ${colorData.b})`;
+                document.getElementById('hslValue').value = `hsl(${colorData.hsl.h}, ${colorData.hsl.s}%, ${colorData.hsl.l}%)`;
+                document.getElementById('cssValue').value = `--azab-color: ${colorData.hex};`;
+            }
+
+            rgbToHex(r, g, b) {
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            }
+
+            rgbToHsl(r, g, b) {
+                r /= 255;
+                g /= 255;
+                b /= 255;
+
+                const max = Math.max(r, g, b);
+                const min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+
+                if (max === min) {
+                    h = s = 0;
+                } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+
+                return {
+                    h: Math.round(h * 360),
+                    s: Math.round(s * 100),
+                    l: Math.round(l * 100)
+                };
+            }
+
+            generateShades(hex) {
+                const shadesGrid = document.getElementById('shadesGrid');
+                shadesGrid.innerHTML = '';
+
+                const shades = [
+                    { label: 'أفتح جداً', factor: 0.8 },
+                    { label: 'أفتح', factor: 0.6 },
+                    { label: 'فاتح', factor: 0.4 },
+                    { label: 'خفيف', factor: 0.2 },
+                    { label: 'أصلي', factor: 0 },
+                    { label: 'داكن', factor: -0.2 },
+                    { label: 'غامق', factor: -0.4 },
+                    { label: 'أغمق', factor: -0.6 },
+                    { label: 'أغمق جداً', factor: -0.8 }
+                ];
+
+                shades.forEach((shade, index) => {
+                    const shadeColor = this.adjustBrightness(hex, shade.factor);
+                    const shadeItem = this.createShadeElement(shade, shadeColor, index);
+                    shadesGrid.appendChild(shadeItem);
+                });
+            }
+
+            createShadeElement(shade, color, index) {
+                const shadeItem = document.createElement('div');
+                shadeItem.className = 'shade-item';
+                shadeItem.style.backgroundColor = color;
+                shadeItem.setAttribute('role', 'button');
+                shadeItem.setAttribute('tabindex', '0');
+                shadeItem.setAttribute('aria-label', `درجة ${shade.label} - ${color}`);
+                shadeItem.innerHTML = `<div class="shade-label">${shade.label}</div>`;
+                
+                const clickHandler = () => {
+                    const rgb = this.hexToRgb(color);
+                    this.setSelectedColor(rgb.r, rgb.g, rgb.b);
+                };
+                
+                shadeItem.addEventListener('click', clickHandler);
+                shadeItem.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        clickHandler();
+                    }
+                });
+                
+                return shadeItem;
+            }
+
+            adjustBrightness(hex, factor) {
+                const rgb = this.hexToRgb(hex);
+                
+                const adjust = (value) => {
+                    if (factor > 0) {
+                        return Math.round(value + (255 - value) * factor);
+                    } else {
+                        return Math.round(value * (1 + factor));
+                    }
+                };
+                
+                const adjusted = {
+                    r: Math.min(255, Math.max(0, adjust(rgb.r))),
+                    g: Math.min(255, Math.max(0, adjust(rgb.g))),
+                    b: Math.min(255, Math.max(0, adjust(rgb.b)))
+                };
+                
+                return this.rgbToHex(adjusted.r, adjusted.g, adjusted.b);
+            }
+
+            hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            checkEyeDropperSupport() {
+                const btn = document.getElementById('eyedropperBtn');
+                if (!('EyeDropper' in window)) {
+                    btn.innerHTML = '❌ غير مدعوم في هذا المتصفح';
+                    btn.disabled = true;
+                    btn.setAttribute('aria-label', 'أداة انتقاء الألوان غير مدعومة في هذا المتصفح');
+                }
+            }
+
+            async useEyeDropper() {
+                if (!('EyeDropper' in window)) {
+                    this.showToast('هذه الميزة غير مدعومة في متصفحك', 'error');
+                    return;
+                }
+
+                try {
+                    const eyeDropper = new EyeDropper();
+                    const result = await eyeDropper.open();
+                    const hex = result.sRGBHex;
+                    const rgb = this.hexToRgb(hex);
+                    this.setSelectedColor(rgb.r, rgb.g, rgb.b);
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('EyeDropper error:', error);
+                        this.showToast('حدث خطأ أثناء استخدام أداة انتقاء الألوان', 'error');
+                    }
+                }
+            }
+
+            showLoadingState() {
+                const buttons = document.querySelectorAll('.upload-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="loading-spinner"></span>' + btn.textContent;
+                });
+            }
+
+            hideLoadingState() {
+                const cameraBtn = document.getElementById('cameraBtn');
+                const galleryBtn = document.getElementById('galleryBtn');
+                
+                cameraBtn.disabled = false;
+                cameraBtn.innerHTML = '📷 الكاميرا';
+                
+                galleryBtn.disabled = false;
+                galleryBtn.innerHTML = '🖼️ المعرض';
+            }
+
+            showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast ${type}`;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, type === 'error' ? 4000 : 2500);
+            }
+        }
+
+        // Enhanced Copy Function
+        async function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const value = element.value;
+            
+            try {
+                // Modern clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(value);
+                } else {
+                    // Fallback for older browsers
+                    element.select();
+                    element.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                }
+                
+                const btn = element.nextElementSibling;
+                const originalText = btn.textContent;
+                
+                btn.textContent = '✓ تم!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 1500);
+                
+                // Show toast
+                const picker = window.colorPickerInstance;
+                if (picker) {
+                    picker.showToast(`تم نسخ ${element.previousElementSibling.textContent} إلى الحافظة!`);
+                }
+                
+            } catch (error) {
+                console.error('Copy failed:', error);
+                const picker = window.colorPickerInstance;
+                if (picker) {
+                    picker.showToast('فشل النسخ. يرجى المحاولة يدوياً', 'error');
+                }
+            }
+        }
+
+        // Initialize Application
+        window.colorPickerInstance = new AdvancedColorPicker();
+
+        // Service Worker Registration for PWA (only in production)
+        function initializeServiceWorker() {
+            // Only register SW in production environment
+            if ('serviceWorker' in navigator && 
+                window.location.hostname !== 'www.claudeusercontent.com' && 
+                window.location.protocol === 'https:') {
+                
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            console.log('✅ Service Worker registered successfully');
+                            // Show PWA install prompt after successful registration
+                            showPWAInstallPrompt();
+                        })
+                        .catch(error => {
+                            console.warn('❌ Service Worker registration failed:', error.message);
+                        });
+                });
+            }
+        }
+
+        // PWA Install Prompt
+        function showPWAInstallPrompt() {
+            let deferredPrompt;
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // Show install button (you can add this to your UI)
+                const installBtn = document.createElement('button');
+                installBtn.textContent = '📱 تثبيت التطبيق';
+                installBtn.className = 'install-app-btn';
+                installBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    color: white;
+                    border: none;
+                    border-radius: 25px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                `;
+                
+                installBtn.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('✅ PWA installed successfully');
+                        }
+                        deferredPrompt = null;
+                        installBtn.remove();
+                    });
+                });
+                
+                document.body.appendChild(installBtn);
+                
+                // Auto hide after 10 seconds
+                setTimeout(() => {
+                    if (installBtn.parentNode) {
+                        installBtn.remove();
+                    }
+                }, 10000);
+            });
+        }
+
+        // Enhanced Performance monitoring
+        function initializePerformanceMonitoring() {
+            window.addEventListener('load', () => {
+                // Use the modern Performance API
+                if ('performance' in window && performance.getEntriesByType) {
+                    try {
+                        const navigation = performance.getEntriesByType('navigation')[0];
+                        if (navigation) {
+                            const loadTime = Math.round(navigation.loadEventEnd - navigation.fetchStart);
+                            const domContentLoaded = Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart);
+                            
+                            console.log(`📊 Performance Metrics:`);
+                            console.log(`   • Page Load Time: ${loadTime}ms`);
+                            console.log(`   • DOM Ready: ${domContentLoaded}ms`);
+                            console.log(`   • DNS Lookup: ${Math.round(navigation.domainLookupEnd - navigation.domainLookupStart)}ms`);
+                            console.log(`   • Server Response: ${Math.round(navigation.responseEnd - navigation.requestStart)}ms`);
+                            
+                            // Performance warnings
+                            if (loadTime > 3000) {
+                                console.warn('⚠️ Page load time is above 3 seconds');
+                            }
+                            if (domContentLoaded > 1500) {
+                                console.warn('⚠️ DOM ready time is above 1.5 seconds');
+                            }
+                        }
+                    } catch (error) {
+                        console.log('📊 Performance monitoring not available in this environment');
+                    }
+                }
+            });
+        }
+
+        // Environment Detection and Initialization
+        function initializeApp() {
+            const isProduction = window.location.hostname !== 'www.claudeusercontent.com' && 
+                                window.location.hostname !== 'localhost';
+            const isDevelopment = window.location.hostname === 'localhost';
+            const isDemo = window.location.hostname === 'www.claudeusercontent.com';
+            
+            console.log(`🚀 تم تشغيل منتقي الألوان المتقدم`);
+            console.log(`   • البيئة: ${isProduction ? 'إنتاج' : isDevelopment ? 'تطوير' : 'عرض تجريبي'}`);
+            console.log(`   • الوقت: ${new Date().toLocaleString('ar-EG')}`);
+            
+            // Initialize based on environment
+            if (isProduction) {
+                initializeServiceWorker();
+                initializePerformanceMonitoring();
+                console.log('✅ تم تفعيل جميع ميزات الإنتاج');
+            } else if (isDevelopment) {
+                initializePerformanceMonitoring();
+                console.log('🔧 وضع التطوير - بدون Service Worker');
+            } else {
+                console.log('🎭 وضع العرض التجريبي - الميزات محدودة');
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
