@@ -1,0 +1,124 @@
+{
+    "actions": [],
+    "allow_copy": 1,
+    "allow_events_in_timeline": 0,
+    "allow_guest_to_view": 1,
+    "allow_import": 1,
+    "allow_rename": 1,
+    "autoname": "field:palette_name",
+    "beta": 0,
+    "creation": "2024-01-01 12:00:00.000000",
+    "custom": 0,
+    "docstatus": 0,
+    "doctype": "DocType",
+    "document_type": "Document",
+    "engine": "InnoDB",
+    "fields": [
+        {
+            "fieldname": "palette_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "اسم المجموعة",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "description",
+            "fieldtype": "Text",
+            "label": "الوصف"
+        },
+        {
+            "fieldname": "colors_section",
+            "fieldtype": "Section Break",
+            "label": "الألوان"
+        },
+        {
+            "fieldname": "colors",
+            "fieldtype": "Table",
+            "label": "قائمة الألوان",
+            "options": "Color Palette Item",
+            "reqd": 1
+        },
+        {
+            "fieldname": "metadata_section",
+            "fieldtype": "Section Break",
+            "label": "معلومات إضافية"
+        },
+        {
+            "fieldname": "created_by",
+            "fieldtype": "Link",
+            "label": "أنشئت بواسطة",
+            "options": "User",
+            "read_only": 1
+        },
+        {
+            "fieldname": "is_public",
+            "fieldtype": "Check",
+            "label": "عامة",
+            "default": 0
+        },
+        {
+            "fieldname": "tags",
+            "fieldtype": "Data",
+            "label": "العلامات"
+        },
+        {
+            "fieldname": "usage_count", 
+            "fieldtype": "Int",
+            "label": "مرات الاستخدام",
+            "default": 0,
+            "read_only": 1
+        }
+    ],
+    "has_web_view": 1,
+    "hide_heading": 0,
+    "hide_toolbar": 0,
+    "idx": 0,
+    "image_view": 0,
+    "in_create": 0,
+    "is_submittable": 0,
+    "issingle": 0,
+    "istable": 0,
+    "max_attachments": 5,
+    "modified": "2024-01-01 12:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Color Picker",
+    "name": "Color Palette",
+    "naming_rule": "By fieldname",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "User",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "quick_entry": 1,
+    "read_only": 0,
+    "search_fields": "palette_name,description,tags",
+    "show_name_in_global_search": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "title_field": "palette_name",
+    "track_changes": 1,
+    "track_seen": 1,
+    "track_views": 1
+}
