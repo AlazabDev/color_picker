@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include color_picker *.css
+recursive-include color_picker *.csv
+recursive-include color_picker *.html
+recursive-include color_picker *.ico
+recursive-include color_picker *.js
+recursive-include color_picker *.json
+recursive-include color_picker *.md
+recursive-include color_picker *.png
+recursive-include color_picker *.py
+recursive-include color_picker *.svg
+recursive-include color_picker *.txt
+recursive-exclude color_picker *.pyc
